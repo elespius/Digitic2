@@ -7,6 +7,10 @@ module Spree
         respond_with(@collection)
       end
 
+      def show
+        redirect_to action: :edit
+      end
+
       private
 
       def collection
