@@ -8,6 +8,7 @@ module Spree
       end
 
       def show
+        @property = Spree::Property.find_by!(id: params[:id])
         redirect_to action: :edit
       end
 
