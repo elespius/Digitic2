@@ -118,6 +118,9 @@ commands:
       - run:
           name: "Run Legacy Promotion Tests"
           command: ./bin/build-ci legacy_promotions
+      - run:
+          name: "Run Friendly Promotion Tests"
+          command: ./bin/build-ci promotions
 
       - store_artifacts:
           path: /tmp/test-artifacts
@@ -253,7 +256,7 @@ jobs:
   solidus_installer:
     executor:
       name: sqlite
-      ruby: "3.0"
+      ruby: "3.1"
     steps:
       - checkout
       - run:
@@ -276,12 +279,10 @@ jobs:
       - test_page:
           expected_text: "<title>Sample Store</title>"
       - install_dummy_app
-      - install_dummy_app:
-          extra_gems: "solidus_frontend"
       - run:
-          name: "Ensure solidus_frontend installer is run"
+          name: "Ensure extension test app is created"
           command: |
-            test -f /tmp/dummy_extension/spec/dummy/config/initializers/solidus_frontend.rb
+            test -d /tmp/dummy_extension/spec/dummy
 
   test_solidus:
     parameters:
