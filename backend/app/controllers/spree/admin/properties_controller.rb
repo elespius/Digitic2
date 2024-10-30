@@ -7,11 +7,6 @@ module Spree
         respond_with(@collection)
       end
 
-      def show
-        @property = Spree::Property.find_by!(id: params[:id])
-        redirect_to action: :edit
-      end
-
       private
 
       def collection

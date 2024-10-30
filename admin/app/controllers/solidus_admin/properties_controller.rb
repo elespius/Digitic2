@@ -5,6 +5,8 @@ module SolidusAdmin
     include SolidusAdmin::ControllerHelpers::Search
 
     def index
+      set_index_page
+
       properties = apply_search_to(
         Spree::Property.order(created_at: :desc, id: :desc),
         param: :q,
@@ -19,6 +21,43 @@ module SolidusAdmin
       end
     end
 
+    def new
+      @property = Spree::Property.new
+
+      set_index_page
+
+      respond_to do |format|
+        format.html { render component('properties/new').new(page: @page, property: @property) }
+      end
+    end
+
+    def create
+      @property = Spree::Property.new(property_params)
+
+      if @property.save
+        respond_to do |format|
+          flash[:notice] = t('.success')
+
+          format.html do
+            redirect_to solidus_admin.properties_path, status: :see_other
+          end
+
+          format.turbo_stream do
+            render turbo_stream: '<turbo-stream action="refresh" />'
+          end
+        end
+      else
+        set_index_page
+
+        respond_to do |format|
+          format.html do
+            page_component = component('properties/new').new(page: @page, property: @property)
+            render page_component, status: :unprocessable_entity
+          end
+        end
+      end
+    end
+
     def destroy
       @properties = Spree::Property.where(id: params[:id])
 
@@ -28,6 +67,21 @@ module SolidusAdmin
 
       flash[:notice] = t('.success')
       redirect_to properties_path, status: :see_other
+    end
+
+    private
+
+    def property_params
+      params.require(:property).permit(:name, :presentation)
+    end
+
+    def set_index_page
+      properties = apply_search_to(
+        Spree::Property.unscoped.order(id: :desc),
+        param: :q,
+      )
+
+      set_page_and_extract_portion_from(properties)
     end
   end
 end

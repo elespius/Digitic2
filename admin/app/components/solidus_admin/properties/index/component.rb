@@ -14,14 +14,20 @@ class SolidusAdmin::Properties::Index::Component < SolidusAdmin::UI::Pages::Inde
   end
 
   def row_url(property)
-    spree.admin_property_path(property)
+    spree.edit_admin_property_path(property)
+  end
+
+  def turbo_frames
+    %w[
+      new_property_modal
+    ]
   end
 
   def page_actions
     render component("ui/button").new(
       tag: :a,
       text: t('.add'),
-      href: spree.new_admin_property_path,
+      href: solidus_admin.new_property_path, data: { turbo_frame: :new_property_modal },
       icon: "add-line",
     )
   end
