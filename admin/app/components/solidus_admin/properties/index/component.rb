@@ -14,12 +14,13 @@ class SolidusAdmin::Properties::Index::Component < SolidusAdmin::UI::Pages::Inde
   end
 
   def row_url(property)
-    spree.edit_admin_property_path(property)
+    spree.edit_admin_property_path(property, _turbo_frame: :edit_property_modal)
   end
 
   def turbo_frames
     %w[
       new_property_modal
+      edit_property_modal
     ]
   end
 

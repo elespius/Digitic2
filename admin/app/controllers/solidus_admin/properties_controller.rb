@@ -4,6 +4,8 @@ module SolidusAdmin
   class PropertiesController < SolidusAdmin::BaseController
     include SolidusAdmin::ControllerHelpers::Search
 
+    before_action :find_property, only: %i[edit update]
+
     def index
       set_index_page
 
@@ -58,6 +60,39 @@ module SolidusAdmin
       end
     end
 
+    def edit
+      set_index_page
+
+      respond_to do |format|
+        format.html { render component('properties/edit').new(page: @page, property: @property) }
+      end
+    end
+
+    def update
+      if @property.update(property_params)
+        respond_to do |format|
+          flash[:notice] = t('.success')
+
+          format.html do
+            redirect_to solidus_admin.properties_path, status: :see_other
+          end
+
+          format.turbo_stream do
+            render turbo_stream: '<turbo-stream action="refresh" />'
+          end
+        end
+      else
+        set_index_page
+
+        respond_to do |format|
+          format.html do
+            page_component = component('properties/edit').new(page: @page, property: @property)
+            render page_component, status: :unprocessable_entity
+          end
+        end
+      end
+    end
+
     def destroy
       @properties = Spree::Property.where(id: params[:id])
 
@@ -70,6 +105,10 @@ module SolidusAdmin
     end
 
     private
+
+    def find_property
+      @property = Spree::Property.find(params[:id])
+    end
 
     def property_params
       params.require(:property).permit(:name, :presentation)

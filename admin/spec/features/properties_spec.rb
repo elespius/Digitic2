@@ -22,7 +22,7 @@ describe "Properties", :js, type: :feature do
     expect(Spree::Property.count).to eq(1)
   end
 
-  context "creating a new property" do 
+  context "creating a new property" do
     it "creates a new product property" do
       visit "/admin/properties"
       click_on "Add new"
@@ -46,6 +46,36 @@ describe "Properties", :js, type: :feature do
 
       expect(page).to have_content("can't be blank")
       expect(Spree::Property.count).to eq(0)
+    end
+  end
+
+  context "editing an existing property" do
+    let!(:property) { create(:property, name: "Color", presentation: "Cool Color") }
+
+    it "updates the property" do
+      visit "/admin/properties"
+      # Find the row containing the property with name "Color"
+      find('tr', text: 'Color').click
+
+      fill_in "Name", with: "Size"
+      fill_in "Presentation", with: "Cool Size"
+      click_on "Update Property"
+
+      expect(page).to have_content("Property was successfully updated.")
+      expect(page).to have_content("Size")
+      expect(page).to have_content("Cool Size")
+      expect(Spree::Property.count).to eq(1)
+    end
+
+    it "shows validation errors" do
+      visit "/admin/properties"
+      find('tr', text: 'Color').click
+
+      fill_in "Name", with: ""
+      click_on "Update Property"
+
+      expect(page).to have_content("can't be blank")
+      expect(Spree::Property.count).to eq(1)
     end
   end
 

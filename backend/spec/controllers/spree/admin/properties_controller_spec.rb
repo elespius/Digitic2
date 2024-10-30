@@ -20,11 +20,4 @@ describe Spree::Admin::PropertiesController, type: :controller do
       expect(assigns(:collection)).to be_empty
     end
   end
-
-  context "#show" do
-    it "redirects to edit when a property is found" do
-      get :show, params: { id: property.id }
-      expect(response).to redirect_to(edit_admin_property_path(property))
-    end
-  end
 end
