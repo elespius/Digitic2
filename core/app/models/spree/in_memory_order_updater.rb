@@ -110,6 +110,10 @@ module Spree
     # adjustments, update cancellation adjustments, and then update the total
     # fields (promo_total, included_tax_total, additional_tax_total, and
     # adjustment_total) on the item.
+    #
+    # FIXME: Should this be renamed to `update_adjustments` since it persists
+    # changes to promotion and tax adjustments, and item totals?
+    #
     # @return [void]
     def recalculate_adjustments(persist:)
       # Promotion adjustments must be applied first, then tax adjustments.
